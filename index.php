@@ -78,11 +78,16 @@ function selectAluno($id, $nome, $idade)
         echo "\n";
         printf($format, 'ID', 'NOME', 'IDADE');
 
-        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $aluno){
-            echo "\n";
-            printf($format, $aluno['id'], $aluno['nome'], $aluno['idade']);
-            
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (count($result) > 0){
+            foreach ($result as $aluno){
+                echo "\n";
+                printf($format, $aluno['id'], $aluno['nome'], $aluno['idade']);
+            }
+        }else{
+            echo "\nRegistro não encontrado";
         }
+      
         echo "\n";
 
     } catch (PDOException $error) {
