@@ -35,7 +35,15 @@ function updateAluno($id, $nome, $idade)
         $stmt->bindParam(':nome', $nome);
         $stmt->bindParam(':idade', $idade);
         $stmt->execute();
-        echo "\nAluno atualizado com sucesso!";
+
+        $result = $stmt->rowCount();
+        if ($result > 0) {
+            echo "\nAluno atualizado com sucesso!";
+        } else {
+            echo "\nID inesistente, registro não encontrado!";
+        }
+        
+        
     } catch (PDOException $error) {
         echo "\nNão foi possível alterar aluno, erro: {$error->getMessage()}";
     }
@@ -50,12 +58,17 @@ function deleteAluno($id)
         $stmt = $con->prepare($queryDelete);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
-        echo "\nAluno removido com sucesso!";
+
+        $result = $stmt->rowCount();
+        if($result > 0) {
+            echo "\nAluno removido com sucesso!";
+        } else{
+            echo "\nID inesistente, verifique e tente novamente!";
+        }
+                
     } catch (PDOException $error) {
         echo "\nNão foi possível excluir o registro, erro: {$error->getMessage()}";
     }
-
-
 }
 
 // --- SELECT ---
@@ -78,22 +91,35 @@ function selectAluno($id, $nome, $idade)
         echo "\n";
         printf($format, 'ID', 'NOME', 'IDADE');
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (count($result) > 0){
-            foreach ($result as $aluno){
+        $i = 0;
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $aluno){
+            echo "\n";
+            printf($format, $aluno['id'], $aluno['nome'], $aluno['idade']);
+            $i++;
+        }
+
+        if(!$i > 0){
+            echo "\n\n ### Registro não encontrado, favor rever e fazer uma nova pesquisa. ###";
+        }
+
+        /*$alunos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (count($alunos) > 0){
+            foreach ($alunos as $aluno){
                 echo "\n";
                 printf($format, $aluno['id'], $aluno['nome'], $aluno['idade']);
             }
         }else{
             echo "\nRegistro não encontrado";
-        }
-      
+        }*/
+        
         echo "\n";
 
     } catch (PDOException $error) {
         echo "\nFalha ao listar Alunos, erro: {$error->getMessage()}";
     }
 }
+
+################################################################################################
 
 // --- TERMINAL ADICIONAL ALUNO ---
 function terminaAddAluno()
@@ -216,7 +242,7 @@ function terminalSelectAluno()
     
 }
 
-
+################################################################################################
 function menu()
 {
     echo "\n\n\n**** Bem vindo ao sistema CRUD de Alunos ****";
